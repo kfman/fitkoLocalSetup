@@ -10,8 +10,10 @@ RUN git clone https://${USER}@git.fitko.de/fit-connect/zustelldienst.git -b epic
 
 
 WORKDIR /app/zustelldienst
-RUN sed -i "s|url: jdbc:postgresql://localhost:5432/zustelldienst|url: jdbc:postgresql://zustelldienst-db:5432/zustelldienst|g" src/main/resources/application-dev.yml
-RUN mvn clean install -DskipTests=true -Pdev
+RUN sed -i "s|url: jdbc:postgresql://localhost:5432/zustelldienst|url: jdbc:postgresql://zustelldienst-db:5432/zustelldienst|g" ./src/main/resources/application-dev.yml
+RUN mv ./src/main/resources/application-dev.yml ./src/main/resources/application.yml
+RUN mvn clean package -DskipTests=true
+# CMD mvn spring-boot:run -D spring-boot.run.profiles=dev
 
 FROM maven:3.9.3-sapmachine-17 as Runner
 WORKDIR /app/zustelldienst
