@@ -1,0 +1,5 @@
+.idea
+oauth-server-db
+.zustelldienst
+.env
+*.log

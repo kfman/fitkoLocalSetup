@@ -1,0 +1,60 @@
+version: '3'
+services:
+
+  ssp:
+    build:
+      context: ./ssp/
+      args:
+        - USERNAME=${USERNAME}
+        - TOKEN=${TOKEN}
+    env_file:
+      - .env
+
+  zustelldienst:
+    build:
+      context: ./zustelldienst/
+      args:
+        - USERNAME=${USERNAME}
+        - TOKEN=${TOKEN}
+    env_file:
+      - .env
+    depends_on:
+      - zustelldienst-db
+
+  oauth-server:
+    build:
+      context: ./oauth
+      args:
+        - USERNAME=${USERNAME}
+        - TOKEN=${TOKEN}
+    env_file:
+      - .env
+    ports:
+      - "8085:8080"
+    volumes:
+      - ./oauth/config.properties:/etc/connect2id-config.properties:ro
+    environment:
+      TZ: Etc/UTC
+      CATALINA_OPTS: >-
+        -DsystemPropertiesURL=file:////etc/connect2id-config.properties
+    depends_on:
+      - oauth-server-db
+
+  zustelldienst-db:
+    image: postgres:13.5-alpine
+    ports:
+      - '5432:5432'
+    environment:
+      POSTGRES_PASSWORD: postgres
+    volumes:
+      - .zustelldienst/setup.sql:/docker-entrypoint-initdb.d/setup.sql
+
+  oauth-server-db:
+    image: postgres:13.5-alpine
+    volumes:
+      - ./oauth-server-db:/var/lib/postgresql/data
+    environment:
+      TZ: Etc/UTC
+      POSTGRES_USER: c2id
+      POSTGRES_PASSWORD: c2id
+      POSTGRES_DB: c2id
