@@ -48,8 +48,7 @@ services:
       - '5432:5432'
     environment:
       POSTGRES_PASSWORD: postgres
-    volumes:
-      - .zustelldienst/setup.sql:/docker-entrypoint-initdb.d/setup.sql
+      POSTGRES_DB: zustelldienst
 
   oauth-server-db:
     image: postgres:13.5-alpine
