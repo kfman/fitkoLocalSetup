@@ -17,5 +17,6 @@ RUN mvn clean package -DskipTests=true
 
 FROM maven:3.9.3-sapmachine-17 as Runner
 WORKDIR /app/zustelldienst
+RUN mkdir -p /app/zustelldienst/well-known
 COPY --from=Builder /app/zustelldienst/target/zustelldienst.jar .
 CMD ["java", "-jar", "zustelldienst.jar"]
